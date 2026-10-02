@@ -62,12 +62,20 @@ test.describe('Checkout', () => {
     await expect(page).toHaveURL(/checkout/);
   });
 
-  test('CH06 checkout with multiple items completes successfully @regression', async ({ page, checkoutPage }) => {
-    await page.goto('/');
-    await page.getByRole('checkbox', { name: PRODUCTS.categories.powerTools }).check();
-    await page.getByRole('heading', { level: 5 }).first().click();
+  test('CH06 checkout with multiple items completes successfully @regression', async ({ page, homePage, cartPage, checkoutPage }) => {
+    // The cart is kept in-memory by the Angular app, so navigation here must
+    // go through SPA links (homePage.goHomeWithoutLosingCart/goToCart), not
+    // page.goto(), which would reload the app and lose the item already
+    // added in beforeEach.
+    await homePage.goHomeWithoutLosingCart();
+    await homePage.filterByCategory(PRODUCTS.categories.powerTools);
+    await homePage.getProductCardNames().first().click();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await page.locator('[data-test="add-to-cart"]').click();
-    await page.goto('/checkout');
+    await expect(page.getByText(/product added to shopping cart/i)).toBeVisible();
+    await homePage.goToCart();
+    await expect(cartPage.cartRows).toHaveCount(2);
+    await cartPage.proceedToCheckout();
 
     await checkoutPage.continueAsGuest(USERS.guest.email, USERS.guest.firstName, USERS.guest.lastName);
     await checkoutPage.fillAddress(ADDRESS);
