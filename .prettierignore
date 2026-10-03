@@ -1,11 +1,7 @@
 node_modules
-playwright-report
 test-results
-.playwright-mcp
-references
-package-lock.json
+playwright-report
 auth.json
-.claude
-.mcp.json
-workflow
+package-lock.json
 *.md
+.claude

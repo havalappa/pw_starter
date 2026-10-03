@@ -22,7 +22,7 @@ export class CartPage {
     this.proceedToCheckoutButton = page.locator('[data-test="proceed-1"]');
   }
 
-  async navigate() {
+  async navigate(): Promise<void> {
     await this.page.goto('/checkout');
   }
 
@@ -34,11 +34,11 @@ export class CartPage {
     return this.page.getByRole('row', { name: new RegExp(itemName) }).locator('a.btn-danger');
   }
 
-  async updateQuantity(itemName: string, qty: number) {
+  async updateQuantity(itemName: string, qty: number): Promise<void> {
     await this.getItemQuantityInput(itemName).fill(String(qty));
   }
 
-  async proceedToCheckout() {
+  async proceedToCheckout(): Promise<void> {
     await this.proceedToCheckoutButton.click();
   }
 }

@@ -45,4 +45,25 @@ test.describe('Product', () => {
     await homePage.getProductCardNames().first().click();
     await expect(page).toHaveURL(/\/product\//);
   });
+
+  test('P08 increase quantity via stepper adds correct amount to cart @regression', async ({
+    homePage,
+    productPage,
+    cartPage,
+    page,
+  }) => {
+    await homePage.searchFor(PRODUCTS.search.validKeyword);
+    await page.waitForLoadState('networkidle');
+    await page.locator('[class="card skeleton"]').first().waitFor({ state: 'hidden' });
+    await homePage.getProductCardNames().first().click();
+    const itemName = ((await productPage.productName.textContent()) ?? '').trim();
+
+    await productPage.increaseQtyButton.click();
+    await productPage.increaseQtyButton.click();
+    await expect(productPage.quantityInput).toHaveValue('3');
+
+    await productPage.addToCartButton.click();
+    await page.goto('/cart');
+    await expect(cartPage.getItemQuantityInput(itemName)).toHaveValue('3');
+  });
 });

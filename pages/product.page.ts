@@ -33,14 +33,14 @@ export class ProductPage {
       .getByRole('heading', { level: 5 });
   }
 
-  async addToCart(qty = 1) {
+  async addToCart(qty = 1): Promise<void> {
     if (qty > 1) {
       await this.quantityInput.fill(String(qty));
     }
     await this.addToCartButton.click();
   }
 
-  async setQuantity(qty: number) {
+  async setQuantity(qty: number): Promise<void> {
     await this.quantityInput.fill(String(qty));
   }
 }

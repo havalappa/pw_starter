@@ -24,28 +24,28 @@ export class HomePage {
     this.homeNavLink = page.locator('app-header').getByRole('link', { name: 'Home' });
   }
 
-  async navigate() {
+  async navigate(): Promise<void> {
     await this.page.goto('/');
     await this.page.waitForLoadState('networkidle');
   }
 
-  async searchFor(keyword: string) {
+  async searchFor(keyword: string): Promise<void> {
     await this.searchInput.fill(keyword);
     await this.searchButton.click();
   }
 
-  async filterByCategory(category: string) {
+  async filterByCategory(category: string): Promise<void> {
     await this.page.getByRole('checkbox', { name: category }).check();
     // Checking a filter re-fetches and re-renders the product grid; without
     // this wait, an immediate click on a card can hit a stale/detached node.
     await this.page.waitForLoadState('networkidle');
   }
 
-  async sortBy(option: string) {
+  async sortBy(option: string): Promise<void> {
     await this.sortDropdown.selectOption(option);
   }
 
-  async clickProduct(name: string) {
+  async clickProduct(name: string): Promise<void> {
     await this.page.getByRole('heading', { name, level: 5 }).click();
   }
 
