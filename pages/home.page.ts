@@ -17,7 +17,9 @@ export class HomePage {
     this.searchButton = page.getByRole('button', { name: 'Search' });
     this.searchClearButton = page.getByRole('button', { name: 'X' });
     this.sortDropdown = page.getByRole('combobox', { name: 'sort' });
-    this.productCards = page.locator('[class*="card"]').filter({ has: page.getByRole('heading', { level: 5 }) });
+    this.productCards = page
+      .locator('[class*="card"]')
+      .filter({ has: page.getByRole('heading', { level: 5 }) });
     this.cartLink = page.locator('app-header a[href="/checkout"]');
     this.homeNavLink = page.locator('app-header').getByRole('link', { name: 'Home' });
   }
@@ -66,7 +68,11 @@ export class HomePage {
   }
 
   getCartBadge(): Locator {
-    return this.page.locator('app-header').getByRole('link', { name: 'cart' }).locator('generic').last();
+    return this.page
+      .locator('app-header')
+      .getByRole('link', { name: 'cart' })
+      .locator('generic')
+      .last();
   }
 
   getPaginationButton(label: string): Locator {

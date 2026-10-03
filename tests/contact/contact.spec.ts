@@ -13,12 +13,16 @@ test.describe('Contact', () => {
     await contactPage.navigate();
   });
 
-  test('CN01 submit valid contact form shows success message @regression', async ({ contactPage }) => {
+  test('CN01 submit valid contact form shows success message @regression', async ({
+    contactPage,
+  }) => {
     await contactPage.submitForm(VALID_CONTACT);
     await expect(contactPage.successMessage).toBeVisible();
   });
 
-  test('CN02 submit empty form shows required field errors @regression', async ({ contactPage }) => {
+  test('CN02 submit empty form shows required field errors @regression', async ({
+    contactPage,
+  }) => {
     await contactPage.submit();
 
     await expect(contactPage.firstNameError).toHaveText(/first name is required/i);
@@ -28,7 +32,9 @@ test.describe('Contact', () => {
     await expect(contactPage.messageError).toHaveText(/message is required/i);
   });
 
-  test('CN03 invalid email format shows email validation error @regression', async ({ contactPage }) => {
+  test('CN03 invalid email format shows email validation error @regression', async ({
+    contactPage,
+  }) => {
     await contactPage.submitForm({ ...VALID_CONTACT, email: INVALID_CONTACT.invalidEmail });
 
     await expect(contactPage.emailError).toHaveText(/email format is invalid/i);
@@ -43,7 +49,9 @@ test.describe('Contact', () => {
     });
   }
 
-  test('CN04 message shorter than the minimum length shows message error @regression', async ({ contactPage }) => {
+  test('CN04 message shorter than the minimum length shows message error @regression', async ({
+    contactPage,
+  }) => {
     await contactPage.submitForm({ ...VALID_CONTACT, message: INVALID_CONTACT.shortMessage });
 
     await expect(contactPage.messageError).toHaveText(/message must be minimal 50 characters/i);
@@ -74,14 +82,20 @@ test.describe('Contact', () => {
     await expect(contactPage.successMessage).toBeHidden();
   });
 
-  test('CN07-05 message over the maximum length is rejected by the server @regression', async ({ contactPage }) => {
+  test('CN07-05 message over the maximum length is rejected by the server @regression', async ({
+    contactPage,
+  }) => {
     await contactPage.submitForm({ ...VALID_CONTACT, message: 'a'.repeat(MESSAGE_MAX_LENGTH + 1) });
 
-    await expect(contactPage.serverErrorAlert).toHaveText(/must not be greater than 250 characters/i);
+    await expect(contactPage.serverErrorAlert).toHaveText(
+      /must not be greater than 250 characters/i,
+    );
     await expect(contactPage.successMessage).toBeHidden();
   });
 
-  test('CN07-04 whitespace-only message is rejected by the server @regression', async ({ contactPage }) => {
+  test('CN07-04 whitespace-only message is rejected by the server @regression', async ({
+    contactPage,
+  }) => {
     // Passes client validation (length >= 50) but POST /messages returns 422.
     await contactPage.submitForm({ ...VALID_CONTACT, message: ' '.repeat(60) });
 

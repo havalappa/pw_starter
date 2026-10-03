@@ -14,7 +14,9 @@ export class CartPage {
     this.cartTable = page.getByRole('table');
     // Scoped to rows that contain a product line, since the cart table also
     // renders a totals row that would otherwise be counted as a cart item.
-    this.cartRows = page.getByRole('row').filter({ has: page.locator('[data-test="product-title"]') });
+    this.cartRows = page
+      .getByRole('row')
+      .filter({ has: page.locator('[data-test="product-title"]') });
     this.cartTotal = page.locator('[data-test="cart-total"]');
     this.continueShoppingButton = page.getByRole('button', { name: 'Continue Shopping' });
     this.proceedToCheckoutButton = page.locator('[data-test="proceed-1"]');

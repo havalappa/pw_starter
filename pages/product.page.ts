@@ -27,7 +27,8 @@ export class ProductPage {
     this.addToCartButton = page.locator('[data-test="add-to-cart"]');
     this.addToFavouritesButton = page.getByRole('button', { name: 'Add to favourites' });
     this.compareButton = page.getByRole('button', { name: 'Compare' });
-    this.relatedProducts = page.getByRole('heading', { level: 2, name: 'Related products' })
+    this.relatedProducts = page
+      .getByRole('heading', { level: 2, name: 'Related products' })
       .locator('..')
       .getByRole('heading', { level: 5 });
   }

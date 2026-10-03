@@ -12,7 +12,11 @@ test.describe('Cart', () => {
     await expect(cartPage.cartRows).toHaveCount(1);
   });
 
-  test('C02 add multiple products shows multiple rows @regression', async ({ homePage, cartPage, page }) => {
+  test('C02 add multiple products shows multiple rows @regression', async ({
+    homePage,
+    cartPage,
+    page,
+  }) => {
     await homePage.goHomeWithoutLosingCart();
     await homePage.filterByCategory(PRODUCTS.categories.powerTools);
     await homePage.getProductCardNames().first().click();
@@ -54,13 +58,17 @@ test.describe('Cart', () => {
     const input = cartPage.getItemQuantityInput(itemName);
     await input.fill('5');
     await input.press('Tab');
-    await expect(cartPage.cartTotal, 'cart total should update after quantity change').not.toHaveText(before || '', { timeout: 5000 });
+    await expect(
+      cartPage.cartTotal,
+      'cart total should update after quantity change',
+    ).not.toHaveText(before || '', { timeout: 5000 });
   });
 
   const increaseQuantities = Array.from({ length: 10 }, (_, i) => i + 1);
 
   for (const qty of increaseQuantities) {
     const id = `C08-${String(qty).padStart(2, '0')}`;
+
     test(`${id} increase item quantity to ${qty} @regression`, async ({ cartPage }) => {
       const input = cartPage.getItemQuantityInput(itemName);
       await input.fill(String(qty));

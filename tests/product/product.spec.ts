@@ -13,7 +13,10 @@ test.describe('Product', () => {
     expect(await names.count()).toBeGreaterThan(0);
   });
 
-  test('P02 search non-existing product shows empty state @regression', async ({ homePage, page }) => {
+  test('P02 search non-existing product shows empty state @regression', async ({
+    homePage,
+    page,
+  }) => {
     await homePage.searchFor(PRODUCTS.search.invalidKeyword);
     await expect(page.getByText(/no products found/i)).toBeVisible();
   });
