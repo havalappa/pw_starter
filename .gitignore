@@ -1,4 +1,4 @@
 node_modules/
-.playwright-mcp/
-test-results/
 playwright-report/
+test-results/
+.playwright-mcp/
