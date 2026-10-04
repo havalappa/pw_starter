@@ -39,6 +39,9 @@ Page Object Model + facade, wired together through a custom Playwright fixture:
 - `utils/helpers.ts` — standalone helper functions (`addProductToCart`, `loginViaUI`, `parseCurrency`) that predate/duplicate some `ShopFacade`/page-object behavior; prefer the facade and page objects for new tests.
 - `tests/auth.setup.ts` — logs in via UI and persists `auth.json` storage state (used when a test needs a pre-authenticated session).
 
+- `.claude/skills/` — project skills: `pw-test-writer` (generate specs), `test-automation` (write/debug tests), `pw-code-review` (review local changes, report-only), `pw-pr-review` (review a GitHub PR via `gh`, report-only unless asked to post).
+- `evals/code-review/` — code-based grader and eval tasks for the `pw-code-review` skill (see its `README.md`). `npm run eval:review:grader` self-tests the grader (free); `npm run eval:review` runs the skill live via `claude -p` (costs tokens). Has its own `playwright.config.ts`; not part of the e2e suite.
+
 Specs live under `tests/<feature>/*.spec.ts` (`cart`, `checkout`, `product`). Each test title is prefixed with a short ID (`C01`, `P03`, `CH06`, etc.) and tagged `@regression`, enabling targeted runs via `--grep`.
 
 `playwright.config.ts`: Chromium only, `fullyParallel: true`, no retries, 15s test timeout, screenshots/traces captured only on failure, video off.
