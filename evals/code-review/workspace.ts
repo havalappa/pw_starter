@@ -103,22 +103,16 @@ export interface AgentRun {
   metrics: { numTurns?: number; durationMs?: number; costUsd?: number };
 }
 
+/** Quote an argument that may be empty or contain shell metacharacters (Windows runs via cmd). */
+const quote = (arg: string): string => (process.platform === 'win32' ? `"${arg}"` : arg);
+
 /**
- * Runs the skill headlessly in `cwd`. The prompt goes in on stdin to avoid shell quoting on Windows.
- * Edits are auto-accepted on purpose: the sandbox is disposable, and the outcome check proves
- * whether the skill stayed read-only instead of relying on a permission wall to hide a violation.
+ * Runs `claude -p` headlessly in `cwd`. The prompt goes in on stdin to avoid shell quoting on
+ * Windows. `extraArgs` carries the per-caller tool and permission policy.
  */
-export function runSkill(cwd: string, prompt: string): AgentRun {
+export function runClaude(cwd: string, prompt: string, extraArgs: string[]): AgentRun {
   const win = process.platform === 'win32';
-  const args = [
-    '-p',
-    '--output-format',
-    'json',
-    '--permission-mode',
-    'acceptEdits',
-    '--allowedTools',
-    win ? '"Bash(git:*)"' : 'Bash(git:*)',
-  ];
+  const args = ['-p', '--output-format', 'json', ...extraArgs];
   if (process.env.EVAL_MODEL) args.push('--model', process.env.EVAL_MODEL);
 
   const res = spawnSync(process.env.CLAUDE_BIN ?? 'claude', args, {
@@ -151,4 +145,42 @@ export function runSkill(cwd: string, prompt: string): AgentRun {
   } catch {
     throw new Error(`claude did not return JSON (exit ${res.status}): ${res.stderr || res.stdout}`);
   }
+}
+
+/**
+ * Runs the skill. Edits are auto-accepted on purpose: the sandbox is disposable, and the outcome
+ * check proves whether the skill stayed read-only instead of a permission wall hiding a violation.
+ */
+export function runSkill(cwd: string, prompt: string): AgentRun {
+  return runClaude(cwd, prompt, [
+    '--permission-mode',
+    'acceptEdits',
+    '--allowedTools',
+    quote('Bash(git:*)'),
+  ]);
+}
+
+/** Runs a judge: no tools, no skills, so the verdict rests on the prompt alone. */
+export function runJudge(cwd: string, prompt: string): AgentRun {
+  return runClaude(cwd, prompt, ['--tools', quote(''), '--disable-slash-commands']);
+}
+
+const NL = '\n';
+
+const GUIDELINES = 'agent-context/CODING_GUIDELINES.md';
+
+/**
+ * Everything a judge needs to verify a review's claims: the branch diff, the repo files at HEAD
+ * (the diff alone cannot show, e.g., that test ID C01 already exists in another file), and the
+ * guidelines the review cites by section number.
+ */
+export function describeChange(ws: Workspace): string {
+  const diff = git(ws.dir, 'diff', 'main...HEAD');
+  const files = Object.keys(ws.snapshot)
+    .filter((p) => p === GUIDELINES || (!p.startsWith('agent-context/') && p !== 'CLAUDE.md'))
+    .sort()
+    .map((p) => ['--- ' + p, fs.readFileSync(path.join(ws.dir, p), 'utf8')].join(NL));
+  return ['## Diff (main...HEAD)', diff, '', '## Repository files at HEAD', files.join(NL)].join(
+    NL,
+  );
 }
